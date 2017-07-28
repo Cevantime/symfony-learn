@@ -3,16 +3,29 @@
 namespace AppBundle\Entity;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Description of Task
- *
+ * Task
+ * @ORM\Table(name="tasks")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\TaskRepository")
  * @author cevantime
  */
+
 class Task {
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    
 	/**
-	 * @Assert\NotBlank()
+	 * @Assert\NotBlank(message="Veuillez fournir un contenu pour la tâche")
+     * @ORM\Column(name="task", type="string", length=255)
 	 * @var string
 	 */
 	protected $task;
@@ -20,27 +33,69 @@ class Task {
 	/**
 	 * @Assert\NotBlank()
 	 * @Assert\Type(
-	 *	type="\DateTime", 
-	 *	message="{{ value }} is not a valid {{ type }}"
+	 *	type="\DateTime"
 	 * )
-	 * @var DateTime
+     * @ORM\Column(name="dueDate", type="datetime")
+	 * @var \DateTime
 	 */
 	protected $dueDate;
+    
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	public function getTask() {
-		return $this->task;
-	}
+    /**
+     * Set task
+     *
+     * @param string $task
+     *
+     * @return Task
+     */
+    public function setTask($task)
+    {
+        $this->task = $task;
 
-	public function setTask($task) {
-		$this->task = $task;
-	}
+        return $this;
+    }
 
-	public function getDueDate() {
-		return $this->dueDate;
-	}
+    /**
+     * Get task
+     *
+     * @return string
+     */
+    public function getTask()
+    {
+        return $this->task;
+    }
 
-	public function setDueDate(\DateTime $dueDate = null) {
-		$this->dueDate = $dueDate;
-	}
+    /**
+     * Set dueDate
+     *
+     * @param \DateTime $dueDate
+     *
+     * @return Task
+     */
+    public function setDueDate($dueDate)
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    /**
+     * Get dueDate
+     *
+     * @return \DateTime
+     */
+    public function getDueDate()
+    {
+        return $this->dueDate;
+    }
 
 }

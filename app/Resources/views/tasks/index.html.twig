@@ -1,5 +1,39 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-	<a class="btn btn-default" href="{{ path('app_task_add') }}">Add a task</a>
+    
+    {% include 'includes/flash-messages.html.twig' with { 'dismissible' : true } %}
+    
+    <header>
+        <h1 class="page-header">Tasks List</h1>
+    </header>
+    
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Task</th>
+                <th>Due date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+            <tr>
+                <td>{{ task.id }}</td>
+                <td>{{ task.task }}</td>
+                <td>{{ task.dueDate | date }}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-default" href="{{ path('app_task_edit', { 'id' : task.id }) }}"><i class="glyphicon glyphicon-edit"></i></a>
+                        <a class="btn btn-danger" href="{{ path('app_task_delete', { 'id' : task.id }) }}"><i class="glyphicon glyphicon-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <a class="btn btn-default" href="{{ path('app_task_add') }}">Add a task</a>
+    
 {% endblock %}

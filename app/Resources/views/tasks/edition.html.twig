@@ -1,0 +1,13 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <header>
+        <h1 class="page-header">{{ editionLabel }} a task</h1>
+    </header>
+    {{ form_start(formTask) }}
+            {{ form_widget(formTask) }}
+            <a class="btn btn-primary" href="{{ path('app_task_index') }}" title="Go back to tasks list">
+                Go back to tasks list
+            </a>
+    {{ form_end(formTask) }}
+{% endblock %}

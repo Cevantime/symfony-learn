@@ -18,32 +18,76 @@ use AppBundle\Form\TaskType;
 class TaskController extends Controller {
 	
 	/**
-	 * @Route("/tasks", name="app_task_index")
+	 * @Route("tasks", name="app_task_index")
 	 */
 	public function indexAction() {
-		return $this->render('tasks/index.html.twig');
+        
+        $tasks = $this->getDoctrine()->getRepository(Task::class)->findAll();
+        
+		return $this->render('tasks/index.html.twig', ['tasks' => $tasks]);
 	}
 	
 	/**
 	 * @Route("task/add",name="app_task_add")
-	 * @param Request $request
 	 */
 	public function addAction(Request $request) {
+        return $this->processTask($request);
+	}
+    
+    /**
+     * @Route("task/edit/{id}", name="app_task_edit", requirements={ "id" : "\d+" })
+     */
+    public function editAction(Request $request, Task $task){
+        return $this->processTask($request, $task);
+    }
+
+
+    private function processTask(Request $request, Task $task = null){
+        
+        $submitLabel = 'Edit';
+        $responseVerb = 'updated';
+        
+        if(null === $task) {
+            $task = new Task();
+            $task->setDueDate(new \DateTime('tomorrow'));
+            $submitLabel = 'Add';
+            $responseVerb = 'added';
+        }
 		
-		$task = new Task();
-		
-//		$task->setTask('Learn Symfony');
-		$task->setDueDate(new \DateTime('tomorrow'));
-		
-		$form = $this->createForm(TaskType::class)
-			->add('submit', SubmitType::class, array('label'=>'Ajouter une tâche'));
+		$form = $this->createForm(TaskType::class, $task)
+			->add('submit', SubmitType::class, array(
+                'label'=> $submitLabel
+            ));
 		
 		$form->handleRequest($request);
 		
 		if($form->isSubmitted() && $form->isValid()) {
 			
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($task);
+            $em->flush();
+            
+            $this->addFlash('success', 'The task has been '.$responseVerb);
+            
+            return $this->redirectToRoute('app_task_index');
 		}
 		
-		return $this->render('tasks/add.html.twig', ['formAdd' => $form->createView()]);
-	}
+		return $this->render('tasks/edition.html.twig', [ 
+            'editionLabel' => $submitLabel, 
+            'formTask' => $form->createView()
+        ]);
+    }
+    /**
+     * @Route("task/delete/{id}", name="app_task_delete", requirements={ "id" : "\d+" })
+     */
+    public function deleteAction(Task $task) {
+        
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($task);
+        $em->flush();
+        
+        $this->addFlash('success', 'The task has been successfully removed');
+        
+        return $this->redirectToRoute('app_task_index');
+    }
 }

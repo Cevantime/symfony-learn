@@ -17,7 +17,9 @@ class TaskType extends AbstractType {
 	public function buildForm(\Symfony\Component\Form\FormBuilderInterface $builder, array $options) {
 		$builder
 			->add('task', TextType::class)
-			->add('dueDate', DateType::class);
+			->add('dueDate', DateType::class, array(
+                'invalid_message' => "{{ value }} is not a valid date time"
+            ));
 	}
 	
 	public function configureOptions(\Symfony\Component\OptionsResolver\OptionsResolver $resolver) {
